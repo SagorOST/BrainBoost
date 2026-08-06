@@ -1,0 +1,43 @@
+.features {
+  padding: 80px 10%;
+  text-align: center;
+  background: #f8fafc;
+}
+
+.features h2 {
+  font-size: 40px;
+  margin-bottom: 50px;
+  color: #1e293b;
+}
+
+.feature-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  width: 300px;
+  padding: 30px 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(37,99,235,0.25);
+}
+
+.card h3 {
+  font-size: 26px;
+  margin-bottom: 15px;
+  color: #2563eb;
+}
+
+.card p {
+  color: #555;
+  line-height: 1.6;
+}
