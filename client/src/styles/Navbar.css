@@ -1,26 +1,56 @@
 nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 50px;
-  background-color: #2563eb;
+
+  padding: 18px 60px;
+
+  background: #2563eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 nav h2 {
   color: white;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 nav div {
   display: flex;
-  gap: 20px;
+  gap: 30px;
 }
 
 nav a {
   color: white;
   text-decoration: none;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+
+  transition: all 0.3s ease;
 }
 
 nav a:hover {
   color: #ffd700;
+  transform: translateY(-2px);
+}
+nav a.active {
+  color: #ffd700;
+  border-bottom: 2px solid #ffd700;
+  padding-bottom: 4px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
 }

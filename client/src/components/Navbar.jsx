@@ -1,15 +1,19 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "../styles/Navbar.css";
+import logo from "../assets/logo.png";
 
 export default function Navbar() {
   return (
     <nav>
-      <h2>BrainBoost</h2>
+      <div className="logo">
+        <img src={logo} alt="BrainBoost Logo" />
+        <h2>BrainBoost</h2>
+      </div>
 
       <div>
-        <Link to="/">Home</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/register">Register</Link>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/login">Login</NavLink>
+        <NavLink to="/register">Register</NavLink>
       </div>
     </nav>
   );
