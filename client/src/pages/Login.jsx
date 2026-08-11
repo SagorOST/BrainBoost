@@ -53,7 +53,7 @@ export default function Login() {
     }
 
     // Login successful
-    navigate("/");
+   navigate("/dashboard");
   };
 
   return (
