@@ -14,14 +14,21 @@ export default function Quiz() {
   // ================= LOAD QUIZ =================
 
   const quiz = useMemo(() => {
-    const savedQuizzes =
-      JSON.parse(localStorage.getItem("brainboostQuizzes")) || [];
+    let savedQuizzes = [];
+
+    try {
+      savedQuizzes =
+        JSON.parse(
+          localStorage.getItem("brainboostQuizzes")
+        ) || [];
+    } catch (error) {
+      console.error("Error loading quizzes:", error);
+    }
 
     const foundQuiz = savedQuizzes.find(
       (item) => String(item.id) === String(id)
     );
 
-    // Only published quiz can be played
     if (foundQuiz && foundQuiz.status === "published") {
       return foundQuiz;
     }
@@ -35,7 +42,6 @@ export default function Quiz() {
     return (
       <div className="quiz-page">
         <div className="quiz-container">
-
           <div className="quiz-card result-card">
 
             <div className="quiz-header">
@@ -44,23 +50,21 @@ export default function Quiz() {
               <h1>Quiz Unavailable</h1>
 
               <p>
-                This quiz does not exist or has not been published yet.
+                This quiz does not exist or has not been
+                published yet.
               </p>
             </div>
 
             <div className="result-buttons">
-
               <button
                 className="next-btn"
                 onClick={() => navigate("/dashboard")}
               >
                 Back to Dashboard
               </button>
-
             </div>
 
           </div>
-
         </div>
       </div>
     );
@@ -70,12 +74,10 @@ export default function Quiz() {
 
   const questions = quiz.questions || [];
 
-  // No questions
   if (questions.length === 0) {
     return (
       <div className="quiz-page">
         <div className="quiz-container">
-
           <div className="quiz-card result-card">
 
             <div className="quiz-header">
@@ -89,18 +91,15 @@ export default function Quiz() {
             </div>
 
             <div className="result-buttons">
-
               <button
                 className="next-btn"
                 onClick={() => navigate("/dashboard")}
               >
                 Back to Dashboard
               </button>
-
             </div>
 
           </div>
-
         </div>
       </div>
     );
@@ -114,6 +113,50 @@ export default function Quiz() {
     setSelectedAnswer(option);
   };
 
+  // ================= SAVE RESULT =================
+
+  const saveQuizResult = (finalScore) => {
+    const percentage = Math.round(
+      (finalScore / questions.length) * 100
+    );
+
+    let existingResults = [];
+
+    try {
+      const savedResults =
+        JSON.parse(
+          localStorage.getItem("brainboostResults")
+        ) || [];
+
+      if (Array.isArray(savedResults)) {
+        existingResults = savedResults;
+      }
+    } catch (error) {
+      console.error("Error loading quiz results:", error);
+    }
+
+    const newResult = {
+      id: Date.now(),
+      quizId: quiz.id,
+      quizTitle: quiz.title,
+      category: quiz.category,
+      score: finalScore,
+      totalQuestions: questions.length,
+      percentage: percentage,
+      completedAt: new Date().toISOString(),
+    };
+
+    const updatedResults = [
+      ...existingResults,
+      newResult,
+    ];
+
+    localStorage.setItem(
+      "brainboostResults",
+      JSON.stringify(updatedResults)
+    );
+  };
+
   // ================= NEXT QUESTION =================
 
   const handleNext = () => {
@@ -124,7 +167,6 @@ export default function Quiz() {
 
     let updatedScore = score;
 
-    // CreateQuiz uses correctAnswer
     if (selectedAnswer === question.correctAnswer) {
       updatedScore = score + 1;
     }
@@ -132,6 +174,10 @@ export default function Quiz() {
     // Last question
     if (currentQuestion === questions.length - 1) {
       setScore(updatedScore);
+
+      // Save completed quiz result
+      saveQuizResult(updatedScore);
+
       setShowResult(true);
     } else {
       setScore(updatedScore);
@@ -158,19 +204,16 @@ export default function Quiz() {
 
     return (
       <div className="quiz-page">
-
         <div className="quiz-container">
 
           <div className="quiz-card result-card">
 
             <div className="quiz-header">
-
               <span>🎉 Quiz Completed!</span>
 
               <h1>Your Result</h1>
 
               <p>{quiz.title}</p>
-
             </div>
 
             <div className="result-score">
@@ -178,7 +221,8 @@ export default function Quiz() {
             </div>
 
             <h2>
-              You scored {score} out of {questions.length}
+              You scored {score} out of{" "}
+              {questions.length}
             </h2>
 
             <p>
@@ -210,30 +254,20 @@ export default function Quiz() {
           </div>
 
         </div>
-
       </div>
     );
   }
 
   // ================= OPTIONS =================
 
-  /*
-    CreateQuiz থেকে options যদি হয়:
-
-    {
-      A: "Option A",
-      B: "Option B",
-      C: "Option C",
-      D: "Option D"
-    }
-
-    তাহলে Object.entries() ব্যবহার করতে হবে।
-  */
-
   const options = question.options || {};
 
   const optionList = ["A", "B", "C", "D"]
-    .filter((key) => options[key] !== undefined)
+    .filter(
+      (key) =>
+        options[key] !== undefined &&
+        options[key] !== ""
+    )
     .map((key) => ({
       key,
       text: options[key],
@@ -246,10 +280,9 @@ export default function Quiz() {
 
       <div className="quiz-container">
 
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
 
         <div className="quiz-header">
-
           <span>🧠 BrainBoost Quiz</span>
 
           <h1>{quiz.title}</h1>
@@ -258,27 +291,24 @@ export default function Quiz() {
             {quiz.description ||
               "Test your knowledge and improve your skills."}
           </p>
-
         </div>
 
-        {/* ================= QUIZ CARD ================= */}
+        {/* QUIZ CARD */}
 
         <div className="quiz-card">
 
           <div className="question-number">
-            Question {currentQuestion + 1} of {questions.length}
+            Question {currentQuestion + 1} of{" "}
+            {questions.length}
           </div>
 
-          <h2>
-            {question.question}
-          </h2>
+          <h2>{question.question}</h2>
 
-          {/* ================= OPTIONS ================= */}
+          {/* OPTIONS */}
 
           <div className="options">
 
             {optionList.map((option) => (
-
               <button
                 key={option.key}
                 className={
@@ -286,28 +316,25 @@ export default function Quiz() {
                     ? "selected-option"
                     : ""
                 }
-                onClick={() => handleAnswer(option.key)}
+                onClick={() =>
+                  handleAnswer(option.key)
+                }
               >
-
                 {option.key}. {option.text}
-
               </button>
-
             ))}
 
           </div>
 
-          {/* ================= NEXT BUTTON ================= */}
+          {/* NEXT / SUBMIT */}
 
           <button
             className="next-btn"
             onClick={handleNext}
           >
-
             {currentQuestion === questions.length - 1
               ? "Submit Quiz"
               : "Next Question →"}
-
           </button>
 
         </div>

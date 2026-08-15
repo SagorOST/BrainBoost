@@ -1,18 +1,50 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/AuthorDashboard.css";
 
 export default function AuthorDashboard() {
-  // Load quizzes directly from localStorage
+  const navigate = useNavigate();
+
+  // ================= LOAD QUIZZES =================
+
   const [quizzes, setQuizzes] = useState(() => {
     try {
-      return (
+      const savedQuizzes =
         JSON.parse(
           localStorage.getItem("brainboostQuizzes")
-        ) || []
-      );
+        ) || [];
+
+      return Array.isArray(savedQuizzes)
+        ? savedQuizzes
+        : [];
     } catch (error) {
-      console.error("Error loading quizzes:", error);
+      console.error(
+        "Error loading quizzes:",
+        error
+      );
+
+      return [];
+    }
+  });
+
+  // ================= LOAD RESULTS =================
+
+  const [results] = useState(() => {
+    try {
+      const savedResults =
+        JSON.parse(
+          localStorage.getItem("brainboostResults")
+        ) || [];
+
+      return Array.isArray(savedResults)
+        ? savedResults
+        : [];
+    } catch (error) {
+      console.error(
+        "Error loading results:",
+        error
+      );
+
       return [];
     }
   });
@@ -20,8 +52,17 @@ export default function AuthorDashboard() {
   // ================= DELETE QUIZ =================
 
   const handleDeleteQuiz = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this quiz?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
     const updatedQuizzes = quizzes.filter(
-      (quiz) => String(quiz.id) !== String(id)
+      (quiz) =>
+        String(quiz.id) !== String(id)
     );
 
     localStorage.setItem(
@@ -37,6 +78,55 @@ export default function AuthorDashboard() {
   const publishedQuizzes = quizzes.filter(
     (quiz) => quiz.status === "published"
   );
+
+  // ================= TOTAL ATTEMPTS =================
+
+  const totalAttempts = results.length;
+
+  // ================= AVERAGE SCORE =================
+
+  const averageScore =
+    totalAttempts > 0
+      ? Math.round(
+          results.reduce(
+            (total, result) =>
+              total +
+              Number(result.percentage || 0),
+            0
+          ) / totalAttempts
+        )
+      : 0;
+
+  // ================= QUIZ PERFORMANCE =================
+
+  const getQuizPerformance = (quizId) => {
+    const quizResults = results.filter(
+      (result) =>
+        String(result.quizId) ===
+        String(quizId)
+    );
+
+    const attempts = quizResults.length;
+
+    const average =
+      attempts > 0
+        ? Math.round(
+            quizResults.reduce(
+              (total, result) =>
+                total +
+                Number(
+                  result.percentage || 0
+                ),
+              0
+            ) / attempts
+          )
+        : 0;
+
+    return {
+      attempts,
+      average,
+    };
+  };
 
   // ================= RENDER =================
 
@@ -59,8 +149,8 @@ export default function AuthorDashboard() {
             </h1>
 
             <p>
-              Create engaging quizzes and help students
-              learn smarter.
+              Create engaging quizzes and help
+              students learn smarter.
             </p>
           </div>
 
@@ -72,7 +162,6 @@ export default function AuthorDashboard() {
           </Link>
 
         </div>
-
 
         {/* ================= STATISTICS ================= */}
 
@@ -93,7 +182,6 @@ export default function AuthorDashboard() {
 
           </div>
 
-
           {/* Total Attempts */}
 
           <div className="stat-card">
@@ -103,14 +191,13 @@ export default function AuthorDashboard() {
             </div>
 
             <div>
-              <h2>0</h2>
+              <h2>{totalAttempts}</h2>
               <p>Total Attempts</p>
             </div>
 
           </div>
 
-
-          {/* Average Rating */}
+          {/* Average Score */}
 
           <div className="stat-card">
 
@@ -119,12 +206,11 @@ export default function AuthorDashboard() {
             </div>
 
             <div>
-              <h2>0</h2>
-              <p>Average Rating</p>
+              <h2>{averageScore}%</h2>
+              <p>Average Score</p>
             </div>
 
           </div>
-
 
           {/* Published Quizzes */}
 
@@ -135,14 +221,18 @@ export default function AuthorDashboard() {
             </div>
 
             <div>
-              <h2>{publishedQuizzes.length}</h2>
-              <p>Published Quizzes</p>
+              <h2>
+                {publishedQuizzes.length}
+              </h2>
+
+              <p>
+                Published Quizzes
+              </p>
             </div>
 
           </div>
 
         </div>
-
 
         {/* ================= QUIZ MANAGEMENT ================= */}
 
@@ -167,92 +257,127 @@ export default function AuthorDashboard() {
 
           </div>
 
-
           {/* ================= QUIZ LIST ================= */}
 
           {quizzes.length > 0 ? (
 
             <div className="quiz-list">
 
-              {quizzes.map((quiz) => (
+              {quizzes.map((quiz) => {
 
-                <div
-                  className="author-quiz-card"
-                  key={quiz.id}
-                >
+                const performance =
+                  getQuizPerformance(
+                    quiz.id
+                  );
 
-                  <div className="quiz-card-info">
+                return (
+                  <div
+                    className="author-quiz-card"
+                    key={quiz.id}
+                  >
 
-                    <span className="quiz-category">
-                      {quiz.category || "General"}
-                    </span>
+                    <div className="quiz-card-info">
 
-                    <h3>
-                      {quiz.title || "Untitled Quiz"}
-                    </h3>
-
-                    <p>
-                      {quiz.description ||
-                        "No description provided."}
-                    </p>
-
-                    <div className="quiz-meta">
-
-                      <span>
-                        📝 {quiz.questions?.length || 0} Questions
+                      <span className="quiz-category">
+                        {quiz.category ||
+                          "General"}
                       </span>
 
-                      <span
-                        className={
-                          quiz.status === "published"
-                            ? "status-published"
-                            : "status-draft"
+                      <h3>
+                        {quiz.title ||
+                          "Untitled Quiz"}
+                      </h3>
+
+                      <p>
+                        {quiz.description ||
+                          "No description provided."}
+                      </p>
+
+                      <div className="quiz-meta">
+
+                        {/* Questions */}
+
+                        <span>
+                          📝{" "}
+                          {quiz.questions?.length ||
+                            0}{" "}
+                          Questions
+                        </span>
+
+                        {/* Status */}
+
+                        <span
+                          className={
+                            quiz.status ===
+                            "published"
+                              ? "status-published"
+                              : "status-draft"
+                          }
+                        >
+                          {quiz.status ===
+                          "published"
+                            ? "🟢 Published"
+                            : "🟡 Draft"}
+                        </span>
+
+                        {/* Attempts */}
+
+                        <span>
+                          👨‍🎓{" "}
+                          {performance.attempts}{" "}
+                          Attempts
+                        </span>
+
+                        {/* Average */}
+
+                        <span>
+                          🏆{" "}
+                          {performance.average}%
+                          {" "}
+                          Average
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                    {/* ================= ACTIONS ================= */}
+
+                    <div className="quiz-card-actions">
+
+                      {/* View Quiz */}
+
+                      <button
+                        type="button"
+                        className="view-quiz-btn"
+                        onClick={() =>
+                          navigate(
+                            `/quiz/${quiz.id}`
+                          )
                         }
                       >
-                        {quiz.status === "published"
-                          ? "🟢 Published"
-                          : "🟡 Draft"}
-                      </span>
+                        👁 View
+                      </button>
+
+                      {/* Delete Quiz */}
+
+                      <button
+                        type="button"
+                        className="delete-quiz-btn"
+                        onClick={() =>
+                          handleDeleteQuiz(
+                            quiz.id
+                          )
+                        }
+                      >
+                        🗑 Delete
+                      </button>
 
                     </div>
 
                   </div>
-
-
-                  {/* ================= ACTIONS ================= */}
-
-                  <div className="quiz-card-actions">
-
-                    <button
-                      type="button"
-                      className="view-quiz-btn"
-                      onClick={() =>
-                        alert(
-                          `Quiz: ${quiz.title || "Untitled"}\nQuestions: ${
-                            quiz.questions?.length || 0
-                          }`
-                        )
-                      }
-                    >
-                      👁 View
-                    </button>
-
-
-                    <button
-                      type="button"
-                      className="delete-quiz-btn"
-                      onClick={() =>
-                        handleDeleteQuiz(quiz.id)
-                      }
-                    >
-                      🗑 Delete
-                    </button>
-
-                  </div>
-
-                </div>
-
-              ))}
+                );
+              })}
 
             </div>
 
@@ -271,8 +396,9 @@ export default function AuthorDashboard() {
               </h3>
 
               <p>
-                Start creating your first quiz and
-                share your knowledge with students.
+                Start creating your first quiz
+                and share your knowledge with
+                students.
               </p>
 
               <Link

@@ -13,13 +13,27 @@ export default function Navbar() {
         </Link>
 
         <ul className="nav-menu">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/">Categories</Link></li>
-          <li><Link to="/">About</Link></li>
-          <li><Link to="/">Contact</Link></li>
+
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+
+          <li>
+            <a href="#categories">Categories</a>
+          </li>
+
+          <li>
+            <a href="#about">About</a>
+          </li>
+
+          <li>
+            <a href="#contact">Contact</a>
+          </li>
+
         </ul>
 
         <div className="nav-buttons">
+
           <Link to="/login" className="login-btn">
             Login
           </Link>
@@ -27,6 +41,7 @@ export default function Navbar() {
           <Link to="/register" className="signup-btn">
             Sign Up
           </Link>
+
         </div>
 
       </div>

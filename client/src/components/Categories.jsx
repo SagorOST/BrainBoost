@@ -56,7 +56,7 @@ export default function Categories() {
   ];
 
   return (
-    <section className="categories">
+    <section id="categories" className="categories">
       <div className="categories-container">
 
         <div className="categories-heading">

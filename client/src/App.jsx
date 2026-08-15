@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AuthorDashboard from "./pages/AuthorDashboard";
 import CreateQuiz from "./pages/CreateQuiz";
+import EditQuiz from "./pages/EditQuiz";
 import Quiz from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
 
@@ -28,7 +29,10 @@ export default function App() {
 
             <Route path="/register" element={<Register />} />
 
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={<Dashboard />}
+            />
 
             <Route
               path="/author/dashboard"
@@ -38,6 +42,12 @@ export default function App() {
             <Route
               path="/author/create-quiz"
               element={<CreateQuiz />}
+            />
+
+            {/* Edit Quiz */}
+            <Route
+              path="/author/edit-quiz/:id"
+              element={<EditQuiz />}
             />
 
             <Route
