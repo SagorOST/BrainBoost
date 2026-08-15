@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   FaCode,
   FaHtml5,
@@ -15,36 +16,42 @@ export default function Categories() {
       icon: <FaCode />,
       title: "Programming",
       description: "Practice C, C++, Java, Python and more.",
+      path: "/quiz/programming",
     },
     {
       icon: <FaHtml5 />,
       title: "Web Development",
       description:
         "HTML, CSS, JavaScript, React and modern web technologies.",
+      path: "/quiz/web-development",
     },
     {
       icon: <FaRobot />,
       title: "Artificial Intelligence",
       description:
         "Machine Learning, Deep Learning and AI fundamentals.",
+      path: "/quiz/artificial-intelligence",
     },
     {
       icon: <FaDatabase />,
       title: "Database",
       description:
         "Learn SQL, MySQL and Database Management Systems.",
+      path: "/quiz/database",
     },
     {
       icon: <FaShieldAlt />,
       title: "Cyber Security",
       description:
         "Understand ethical hacking and online security basics.",
+      path: "/quiz/cyber-security",
     },
     {
       icon: <FaBookOpen />,
       title: "General Knowledge",
       description:
         "Improve your knowledge with fun daily quizzes.",
+      path: "/quiz/general-knowledge",
     },
   ];
 
@@ -65,6 +72,7 @@ export default function Categories() {
         </div>
 
         <div className="category-grid">
+
           {categories.map((category, index) => (
             <div className="category-card" key={index}>
 
@@ -73,17 +81,23 @@ export default function Categories() {
               </div>
 
               <div className="category-content">
+
                 <h3>{category.title}</h3>
 
                 <p>{category.description}</p>
 
-                <button className="category-btn">
+                <Link
+                  to={category.path}
+                  className="category-btn"
+                >
                   Explore Quiz →
-                </button>
+                </Link>
+
               </div>
 
             </div>
           ))}
+
         </div>
 
       </div>

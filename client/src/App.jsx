@@ -7,41 +7,53 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import AuthorDashboard from "./pages/AuthorDashboard";
+import CreateQuiz from "./pages/CreateQuiz";
+import Quiz from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
 
 import "./App.css";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <div className="app">
-
         <Navbar />
 
         <main className="main-content">
           <Routes>
-
-            {/* Home */}
             <Route path="/" element={<Home />} />
 
-            {/* Authentication */}
             <Route path="/login" element={<Login />} />
+
             <Route path="/register" element={<Register />} />
 
-            {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* 404 */}
-            <Route path="*" element={<NotFound />} />
+            <Route
+              path="/author/dashboard"
+              element={<AuthorDashboard />}
+            />
 
+            <Route
+              path="/author/create-quiz"
+              element={<CreateQuiz />}
+            />
+
+            <Route
+              path="/quiz/:id"
+              element={<Quiz />}
+            />
+
+            <Route
+              path="*"
+              element={<NotFound />}
+            />
           </Routes>
         </main>
 
         <Footer />
-
       </div>
     </BrowserRouter>
   );
 }
-
-export default App;

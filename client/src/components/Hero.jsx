@@ -24,13 +24,22 @@ export default function Hero() {
           </p>
 
           <div className="hero-buttons">
+
+            {/* Start Quiz */}
             <button className="primary-btn">
               ▶ Start Quiz
             </button>
 
-            <button className="secondary-btn">
+            {/* Talk with AI */}
+            <a
+              href="https://claude.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="secondary-btn"
+            >
               💬 Talk with AI
-            </button>
+            </a>
+
           </div>
         </div>
 
@@ -59,6 +68,7 @@ export default function Hero() {
               <div className="screen">
                 🧠
               </div>
+
               <div className="keyboard"></div>
             </div>
           </div>

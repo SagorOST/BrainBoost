@@ -1,135 +1,175 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  FaBrain,
-  FaBookOpen,
-  FaTrophy,
-  FaChartLine,
-  FaClock,
-  FaArrowRight,
-} from "react-icons/fa";
 import "../styles/Dashboard.css";
 
 export default function Dashboard() {
-  const currentUser =
-    JSON.parse(localStorage.getItem("brainboostCurrentUser")) || {
-      name: "Learner",
-      email: "",
-    };
+  const [quizzes] = useState(() => {
+    const savedQuizzes =
+      JSON.parse(localStorage.getItem("brainboostQuizzes")) || [];
+
+    // Only published quizzes
+    return savedQuizzes.filter(
+      (quiz) => quiz.status === "published"
+    );
+  });
 
   return (
     <div className="dashboard-page">
 
-      {/* HEADER */}
-      <div className="dashboard-header">
-        <div>
-          <p className="dashboard-welcome">
-            Welcome back 👋
+      <div className="dashboard-container">
+
+        {/* ================= HEADER ================= */}
+
+        <div className="dashboard-header">
+
+          <span className="dashboard-badge">
+            🧠 Student Dashboard
+          </span>
+
+          <h1>
+            Welcome Back! 👋
+          </h1>
+
+          <p>
+            Choose a quiz and test your knowledge.
           </p>
 
-          <h1>{currentUser.name}</h1>
-
-          <p className="dashboard-subtitle">
-            Ready to boost your knowledge today?
-          </p>
         </div>
 
-        <div className="dashboard-avatar">
-          {currentUser.name.charAt(0).toUpperCase()}
-        </div>
-      </div>
 
-      {/* STAT CARDS */}
-      <div className="dashboard-stats">
+        {/* ================= STATS ================= */}
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaBookOpen />
+        <div className="student-stats">
+
+          <div className="student-stat-card">
+            <span>📝</span>
+
+            <div>
+              <h2>{quizzes.length}</h2>
+              <p>Available Quizzes</p>
+            </div>
           </div>
 
-          <div>
-            <p>Quizzes Completed</p>
-            <h2>0</h2>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaTrophy />
-          </div>
+          <div className="student-stat-card">
+            <span>🎯</span>
 
-          <div>
-            <p>Average Score</p>
-            <h2>0%</h2>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaChartLine />
+            <div>
+              <h2>0</h2>
+              <p>Quizzes Completed</p>
+            </div>
           </div>
 
-          <div>
-            <p>Learning Progress</p>
-            <h2>0%</h2>
-          </div>
-        </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaClock />
-          </div>
+          <div className="student-stat-card">
+            <span>🏆</span>
 
-          <div>
-            <p>Study Time</p>
-            <h2>0h</h2>
-          </div>
-        </div>
-
-      </div>
-
-      {/* MAIN CONTENT */}
-      <div className="dashboard-content">
-
-        {/* START QUIZ */}
-        <div className="dashboard-quiz-card">
-
-          <div className="quiz-card-icon">
-            <FaBrain />
-          </div>
-
-          <div className="quiz-card-text">
-            <h2>Ready for a Quiz?</h2>
-
-            <p>
-              Test your knowledge and improve your
-              learning with BrainBoost quizzes.
-            </p>
-
-            <Link to="/categories" className="dashboard-btn">
-              Start Quiz
-              <FaArrowRight />
-            </Link>
+            <div>
+              <h2>0%</h2>
+              <p>Average Score</p>
+            </div>
           </div>
 
         </div>
 
-        {/* RECENT ACTIVITY */}
-        <div className="recent-card">
 
-          <div className="recent-header">
-            <h2>Recent Activity</h2>
+        {/* ================= QUIZZES ================= */}
+
+        <div className="available-quizzes">
+
+          <div className="section-header">
+
+            <div>
+              <h2>
+                Available Quizzes
+              </h2>
+
+              <p>
+                Start learning and improve your skills.
+              </p>
+            </div>
+
           </div>
 
-          <div className="empty-activity">
-            <FaBookOpen />
 
-            <p>No quiz activity yet.</p>
+          {quizzes.length > 0 ? (
 
-            <span>
-              Complete your first quiz to see your
-              activity here.
-            </span>
-          </div>
+            <div className="quiz-grid">
+
+              {quizzes.map((quiz) => (
+
+                <div
+                  className="student-quiz-card"
+                  key={quiz.id}
+                >
+
+                  <div className="quiz-icon">
+                    🧠
+                  </div>
+
+
+                  <span className="quiz-category">
+                    {quiz.category}
+                  </span>
+
+
+                  <h3>
+                    {quiz.title}
+                  </h3>
+
+
+                  <p>
+                    {quiz.description ||
+                      "Test your knowledge with this quiz."}
+                  </p>
+
+
+                  <div className="quiz-info">
+
+                    <span>
+                      📝 {quiz.questions?.length || 0} Questions
+                    </span>
+
+                    <span>
+                      ⏱️ Practice
+                    </span>
+
+                  </div>
+
+
+                  <Link
+                    to={`/quiz/${quiz.id}`}
+                    className="start-quiz-btn"
+                  >
+                    Start Quiz →
+                  </Link>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          ) : (
+
+            <div className="empty-quizzes">
+
+              <div>
+                📚
+              </div>
+
+              <h3>
+                No quizzes available yet
+              </h3>
+
+              <p>
+                Authors haven't published any quizzes yet.
+                Please check again later.
+              </p>
+
+            </div>
+
+          )}
 
         </div>
 
